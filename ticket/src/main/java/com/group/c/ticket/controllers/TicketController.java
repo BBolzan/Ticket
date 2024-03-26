@@ -12,7 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 
 
@@ -47,5 +51,33 @@ public class TicketController {
         return ResponseEntity.ok(ticket);
     }
     
-    
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteTicket(@PathVariable String ticketId) {
+        
+        // fetch from repository the ticket with the given ticketId
+        Ticket ticket = temp.getTickets().stream().filter(t -> t.getTicketId().equals(ticketId)).findFirst().orElse(null);
+
+        if(ticket == null) {
+            return ResponseEntity.status(Response.SC_NOT_FOUND).build();
+        }
+
+        temp.getTickets().remove(ticket);
+
+        return ResponseEntity.ok("Ticket deleted successfully");
+    }
+
+    @PutMapping("edit/{id}")
+    public ResponseEntity<String> putMethodName(@PathVariable String id, @RequestBody Ticket payload) {
+        
+        Ticket ticket = temp.getTickets().stream().filter(t -> t.getTicketId().equals(id)).findFirst().orElse(null);
+        
+
+        if(ticket == null) {
+            return ResponseEntity.status(Response.SC_NOT_FOUND).build();
+        }
+
+        ticket = payload;
+
+        return ResponseEntity.ok("Ticket updated successfully");
+    }
 }
